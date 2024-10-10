@@ -1,0 +1,147 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Details</title>
+    <style>
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 3px solid #3498db;
+            margin-right: 20px;
+        }
+
+        .profile-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .student-info {
+            flex-grow: 1;
+        }
+        .student-info h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .student-info p {
+            margin: 5px 0;
+            color: #666;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #3498db;
+        }
+        .section-content p {
+            margin: 5px 0;
+            color: #333;
+        }
+        .section-content p span {
+            font-weight: bold;
+            color: #555;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="profile-header">
+        <div class="profile-photo">
+            <img src="{% if student.profile_photo %}{{ student.profile_photo.url }}{% else %}{% static 'default_profile.png' %}{% endif %}" alt="Profile Photo">
+        </div>
+        <div class="student-info">
+            <h2>{{ student.student_profile.student_name|default:"NA" }}</h2>
+            <p>Email: {{ student.student_profile.email|default:"NA" }}</p>
+            <p>Department: {{ student.student_profile.department|default:"NA" }}</p>
+        </div>
+    </div>
+    <hr>
+    <!-- Personal Details -->
+    <div class="section">
+        <h2 class="section-title">Personal Details</h2>
+        <div class="section-content">
+            <p><span>Date of Birth:</span> {{ student.date_of_birth|default:"NA" }}</p>
+            <p><span>Gender:</span> {{ student.gender|default:"NA" }}</p>
+            <p><span>Phone Number:</span> {{ student.phone_number|default:"NA" }}</p>
+            <p><span>Permanent Address:</span> {{ student.permanent_address|default:"NA" }}</p>
+            <p><span>Current Address:</span> {{ student.current_address|default:"NA" }}</p>
+        </div>
+    </div>
+
+    <!-- Academic Details -->
+    <div class="section">
+        <h2 class="section-title">Academic Details</h2>
+        <div class="section-content">
+            <p><span>Degree Program:</span> {{ student.degree_program|default:"NA" }}</p>
+            <p><span>Year of Enrollment:</span> {{ student.year_of_enrollment|default:"NA" }}</p>
+            <p><span>Year of Graduation:</span> {{ student.year_of_graduation|default:"NA" }}</p>
+            <p><span>Education 10th:</span> Percentage: {{ student.tenth_percentage|default:"NA" }}, Passing Year: {{ student.tenth_passing_year|default:"NA" }}, School: {{ student.tenth_school|default:"NA" }}</p>
+            <p><span>Education 12th:</span> Stream: {{ student.twelfth_stream|default:"NA" }}, Percentage: {{ student.twelfth_percentage|default:"NA" }}, Passing Year: {{ student.twelfth_passing_year|default:"NA" }}, School: {{ student.twelfth_school|default:"NA" }}</p>
+            <p><span>Backlogs:</span> {{ student.backlogs|default:"NA" }}</p>
+        </div>
+    </div>
+
+    <!-- Skills and Achievements -->
+    <div class="section">
+        <h2 class="section-title">Skills & Achievements</h2>
+        <div class="section-content">
+            <p><span>Skills:</span> {{ student.skills|default:"NA" }}</p>
+            <p><span>Certifications:</span> {{ student.certifications|default:"NA" }}</p>
+            <p><span>Internship Details:</span> {{ student.internships|default:"NA" }}</p>
+            <p><span>Projects:</span> {{ student.projects|default:"NA" }}</p>
+            <p><span>Achievements:</span> {{ student.achievements|default:"NA" }}</p>
+        </div>
+    </div>
+
+    <!-- Other Information -->
+    <div class="section">
+        <h2 class="section-title">Other Information</h2>
+        <div class="section-content">
+            <p><span>Resume:</span> <a href="{{ student.resume.url|default:'#' }}">View Resume</a></p>
+            <p><span>LinkedIn:</span> <a href="{{ student.linkedin_profile|default:'#' }}">{{ student.linkedin_profile|default:"NA" }}</a></p>
+            <p><span>GitHub:</span> <a href="{{ student.github_profile|default:'#' }}">{{ student.github_profile|default:"NA" }}</a></p>
+            <p><span>Placement Preferences:</span> {{ student.placement_preferences|default:"NA" }}</p>
+            <p><span>Placed Status:</span> {{ student.placed_status|default:"NA" }}</p>
+            <p><span>Job Offers:</span> {{ student.job_offers|default:"NA" }}</p>
+            <p><span>Date of Last Update:</span> {{ student.date_of_last_update|default:"NA" }}</p>
+            <p><span>Nationality:</span> {{ student.nationality|default:"NA" }}</p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

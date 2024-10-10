@@ -1,0 +1,119 @@
+/* Admin Dashboard */
+html, body {
+    margin: 0;
+    height: 100%; /* Set height to 100% */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.dashboard-container {
+    display: flex;
+    min-height: 100vh; /* Ensure it occupies at least the full height of the viewport */
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #2c3e50;
+    color: white;
+    padding: 20px;
+}
+
+.main-content {
+    flex: 1; /* Allows the main content to take the remaining space */
+    background-color: #ecf0f1; /* Example background color */
+    padding: 20px;
+    overflow: auto; /* Enable scrolling if content exceeds viewport height */
+}
+
+.sidebar h2 {
+    color: #34495e;
+    text-align: center;
+    margin: 40px 0;
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin: 20px 0;
+}
+
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.sidebar ul li a:hover {
+    text-decoration: underline;
+}
+
+.dashboard-link h2 {
+    margin: 0;
+    font-size: 1.7em; /* Adjust size as needed */
+    color: white;
+    text-align: center;
+    text-decoration: none; /* Ensure no underline */
+}
+
+.dashboard-link:hover h2 {
+    text-decoration: underline;
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #ecf0f1;
+}
+
+.main-content h3 {
+    margin-top: 0;
+}
+
+/* Form styles */
+form {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"]{
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.form-group button {
+    display: inline-block;
+    background-color: #2c3e50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.form-group button:hover {
+    background-color: #1a252f;
+}

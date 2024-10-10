@@ -1,0 +1,145 @@
+<style>
+    .applied-jobs-section {
+        max-width: 1200px;
+        margin: auto;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-title {
+        color: #343a40;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+    .search-form {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .search-input {
+        padding: 10px;
+        margin-right: 10px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 16px;
+        width: 250px;
+    }
+
+    .search-button {
+        padding: 10px 15px;
+        border-radius: 4px;
+        color: #fff;
+        background-color: #007bff;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .search-button:hover {
+        background-color: #0056b3;
+    }
+
+    .applied-job-table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+    }
+
+    .applied-job-table th,
+    .applied-job-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .applied-job-table th {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    .applied-job-table tbody tr:nth-of-type(odd) {
+        background-color: #f2f2f2;
+    }
+
+    .applied-job-table tbody tr:hover {
+        background-color: #e2e6ea;
+    }
+
+    .empty {
+        text-align: center;
+        font-style: italic;
+        color: #6c757d;
+    }
+
+    .btn {
+        padding: 8px 12px;
+        border-radius: 4px;
+        color: #fff;
+        text-decoration: none;
+        font-size: 14px;
+        margin-right: 10px;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        transition: background-color 0.3s;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333;
+    }
+
+    a{
+        color: #ffffff;
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+</style>
+
+<div class="container mt-4 applied-jobs-section">
+    <h2 class="section-title">Applied Jobs</h2>
+    <hr>
+
+    <!-- Table for displaying applied jobs -->
+    <table class="applied-job-table table table-striped">
+        <thead>
+            <tr>
+                <th>Company</th>
+                <th>Job Title</th>
+                <th>Location</th>
+                <th>Date Applied</th>
+                <th>Status</th>
+                <th>Date of drive</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for job in applied_jobs %}
+                <tr>
+                    <td>{{ job.job_drive.company }}</td>
+                    <td>{{ job.job_drive.title }}</td>
+                    <td>{{ job.job_drive.location }}</td>
+                    <td>{{ job.applied_at|date:"d M Y" }}</td>
+                    <td>{{ job.job_drive.tentative_drive_date|date:"d M Y" }}</td>
+                    <td>{{ job.status }}</td>
+                    <td>
+                        <button class="btn btn-danger" onclick="return confirm('Are you sure you want to withdraw the application?');">
+                            <a href="{% url 'widrow-application' job.id %}" style="color: white; text-decoration: none;">Withdraw Application</a>
+                        </button>
+                    </td>                    
+
+                </tr>
+            
+                {% empty %}
+            <tr class="empty">
+                <td colspan="7">You haven't applied to any jobs yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

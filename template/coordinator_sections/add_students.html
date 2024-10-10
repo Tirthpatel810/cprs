@@ -1,0 +1,48 @@
+{% load static %}
+<style>
+    .dashboard-container {
+            display: flex;
+            height: 100%;
+            width: 100%;
+        }
+    
+</style>
+<h3>Add Student</h3>
+
+<form method="post" action="{% url 'create_student' %}">
+    {% csrf_token %}
+    <center><h3>Create Single Student Account</h3></center>
+    <div class="form-group">
+        <label for="name">Full Name:</label>
+        <input type="text" id="name" name="name" required>
+    </div>
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+    </div>
+    <div class="form-group">
+        <label for="department">Department:</label>
+        <input type="text" id="department" name="department" required>
+    </div>
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" 
+        style="width: calc(100% - 20px);
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;"  required>
+    </div>
+    <button type="submit" name="single_account">Create Account</button>
+</form>
+
+<hr>
+
+<form method="post" enctype="multipart/form-data" action="{% url 'create_student' %}">
+    {% csrf_token %}
+    <h4>Upload CSV or Excel File</h4>
+    <h3>formate: email | name | department | password</h3>
+    <input type="file" name="file" accept=".csv, .xls, .xlsx" required>
+    <button type="submit" name="upload_file">Upload File</button>
+</form>
+

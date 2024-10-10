@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Reset Code</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #ecf0f1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Centered container for form */
+        .form-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            position: relative;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input[type="text"]:focus{
+            border-color: #2c3e50;
+            outline: none;
+        }
+
+        .form-group button {
+            width: 100%;
+            background-color: #2c3e50;
+            color: #fff;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-group button:hover {
+            background-color: #1a252f;
+        }
+
+        .alert-message {
+            color: red;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Timer display */
+        .timer {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Enter Reset Code</h2>
+        
+        <!-- Timer display -->
+        <div id="timer" class="timer"></div>
+
+        <form method="post" id="resetForm">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="reset_code">Reset Code:</label>
+                <input type="text" id="reset_code" name="reset_code" placeholder="Enter your reset code" required>
+            </div>
+            <div class="form-group">
+                <button type="submit">Verify Code</button>
+            </div>
+        </form>
+
+        {% if messages %}
+        <div class="alert-message">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- JavaScript for the timer -->
+    <script>
+        // Set the timer for 2 minutes (120 seconds)
+        var timeLeft = 120;
+        var timerDisplay = document.getElementById("timer");
+        var form = document.getElementById("resetForm");
+
+        function startTimer() {
+            var timerInterval = setInterval(function() {
+                var minutes = Math.floor(timeLeft / 60);
+                var seconds = timeLeft % 60;
+                seconds = seconds < 10 ? '0' + seconds : seconds;
+                
+                timerDisplay.textContent = "Time remaining: " + minutes + ":" + seconds;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerDisplay.textContent = "Time's up! Please request a new reset code.";
+                    form.querySelector('button').disabled = true;  // Disable the submit button
+                }
+
+                timeLeft--;
+            }, 1000);
+        }
+
+        // Start the timer when the page loads
+        window.onload = startTimer;
+    </script>
+</body>
+</html>

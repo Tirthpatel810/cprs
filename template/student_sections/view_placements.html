@@ -1,0 +1,179 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <style>
+        .container {
+            max-width: 800px; /* Set a max width for larger screens */
+            margin: auto; /* Center the container */
+            padding: 20px; /* Add some padding */
+            background-color: #f8f9fa; /* Light background */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+        }
+
+        .section-title {
+            color: #343a40; /* Dark text color */
+            font-weight: 600; /* Semi-bold */
+            margin-bottom: 20px; /* Space below the heading */
+        }
+
+        .search-form {
+            display: flex; /* Flexbox for layout */
+            justify-content: space-between; /* Space between elements */
+            margin-bottom: 20px; /* Space below the form */
+        }
+
+        .search-input,
+        .sort-select {
+            padding: 10px; /* Padding for input and select */
+            margin-right: 10px; /* Space between inputs */
+            border: 1px solid #ced4da; /* Border color */
+            border-radius: 4px; /* Rounded corners */
+            font-size: 16px; /* Font size */
+            width: 200px; /* Set a fixed width for better layout */
+        }
+
+        .search-input:focus,
+        .sort-select:focus {
+            border-color: #007bff; /* Highlight border on focus */
+            outline: none; /* Remove default outline */
+        }
+
+        .search-button {
+            padding: 10px 15px; /* Padding for button */
+            border: none; /* Remove default border */
+            border-radius: 4px; /* Rounded corners */
+            color: #fff; /* White text color */
+            cursor: pointer; /* Pointer cursor on hover */
+            background-color: #007bff; /* Primary button color */
+            transition: background-color 0.3s; /* Smooth transition */
+        }
+
+        .search-button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+
+        .job-table {
+            width: 100%; /* Full width for table */
+            margin-top: 20px; /* Space above the table */
+            border-collapse: collapse; /* Remove gaps between cells */
+        }
+
+        .job-table th,
+        .job-table td {
+            padding: 12px; /* Padding for table cells */
+            padding-left: 2%;
+            text-align: left; /* Align text to the left */
+            border-bottom: 1px solid #dee2e6; /* Bottom border for rows */
+        }
+
+        .job-table th {
+            background-color: #007bff; /* Header background color */
+            color: #fff; /* Header text color */
+        }
+
+        .job-table tbody tr:nth-of-type(odd) {
+            background-color: #f2f2f2; /* Zebra stripe effect */
+        }
+
+        .job-table tbody tr:hover {
+            background-color: #e2e6ea; /* Highlight row on hover */
+        }
+
+        .empty {
+            text-align: center; /* Center the empty message */
+            font-style: italic; /* Italicize the message */
+            color: #6c757d; /* Gray color */
+        }
+
+        .apply-button {
+            padding: 10px 15px; /* Padding for apply button */
+            border-radius: 4px; /* Rounded corners */
+            color: #fff; /* White text color */
+            cursor: pointer; /* Pointer cursor on hover */
+            transition: background-color 0.3s; /* Smooth transition */
+            background-color: #28a745; /* Success button color */
+        }
+
+        .apply-button:hover:not(:disabled) {
+            background-color: #218838; /* Darker green on hover */
+        }
+
+        .apply-button:disabled {
+            background-color: #d6d6d6; /* Gray background for disabled */
+            cursor: not-allowed; /* Change cursor to indicate disabled */
+        }
+
+    </style>
+
+    <div class="container mt-4">
+        <h2 class="section-title">Upcoming Placement Drives</h2>
+        
+        <!-- Search and sort functionality -->
+        <form class="search-form" method="GET" action="{% url 'student_dashboard_section' 'view-placements' %}">
+            {% csrf_token %}
+            <input type="text" name="search" class="search-input" placeholder="Search for jobs, companies..." value="{{ search_query }}">
+            <select name="sort_by" class="sort-select">
+                <option value="tentative_drive_date">Date</option>
+                <option value="company">Company</option>
+                <option value="title">Job Title</option>
+                <option value="location">Location</option>
+            </select>
+            <button type="submit" class="btn btn-primary search-button">Search & Sort</button>
+        </form>
+        
+        <hr>
+
+        <!-- Display job drives in a table -->
+        <table class="job-table table table-striped">
+            <thead>
+                <tr>
+                    <th>Company</th>
+                    <th>Job Title</th>
+                    <th>Location</th>
+                    <th>Date</th>
+                    <th>Skills Required</th>
+                    <th>Salary</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for job_drive in job_drives %}
+                <tr>
+                    <td>{{ job_drive.company }}</td>
+                    <td>{{ job_drive.title }}</td>
+                    <td>{{ job_drive.location }}</td>
+                    <td>{{ job_drive.tentative_drive_date|date:"d M Y" }}</td>
+                    <td>{{ job_drive.skills_required }}</td>
+                    <td>{{ job_drive.salary }}</td>
+                    <td>
+                        <form method="POST" action="{% url 'apply_job' job_drive.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success apply-button" {% if job_drive.has_applied %}disabled{% endif %}>
+                                {% if job_drive.has_applied %}
+                                    Applied
+                                {% else %}
+                                    Apply
+                                {% endif %}
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr class="empty">
+                    <td colspan="7">No upcoming placement drives found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>

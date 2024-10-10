@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <nav class="sidebar">
+            <a href="{% url 'admin_dashboard' %}" class="dashboard-link">
+                <h2>Coordinator</h2>
+            </a>
+            <ul>
+                <li><a href="{% url 'admin_dashboard_section' 'create-coordinator' %}">Create Recruiter</a></li>
+                <li><a href="{% url 'admin_dashboard_section' 'create-student' %}">Create Student Account</a></li>
+                <li><a href="{% url 'admin_dashboard_section' 'view-students' %}">View Students</a></li>
+                <li><a href="{% url 'admin_dashboard_section' 'view-coordinators' %}">View Recruiter</a></li>
+                <li><a href="{% url 'admin_dashboard_section' 'job-openings' %}">Job Openings</a></li>
+                <li><a href="{% url 'logout' %}" onclick="return confirm('Are you sure you want to Logout.');">Logout</a></li>
+            </ul>
+        </nav>
+        <main class="main-content">
+            {% include section %}
+        </main>
+    </div>
+    {% if messages %}
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                {% for message in messages %}
+                    alert("{{ message|escapejs }}");
+                {% endfor %}
+            });
+        </script>
+    {% endif %}
+</body>
+</html>

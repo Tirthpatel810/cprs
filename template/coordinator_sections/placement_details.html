@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .container {
+            max-width: 900px; /* Limit the width of the container */
+            margin: 0 auto; /* Center the container */
+            padding: 20px; /* Add padding */
+            background-color: #f8f9fa; /* Light gray background */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
+        }
+
+        /* Heading Styles */
+        h2 {
+            font-size: 24px; /* Large font size for main heading */
+            margin-bottom: 20px; /* Space below the heading */
+        }
+
+        h3 {
+            font-size: 20px; /* Medium font size for subheadings */
+            color: #2f00ff; /* Blue color for subheadings */
+        }
+
+        /* Search Form Styles */
+        .form-control {
+            border: 1px solid #007bff; /* Blue border */
+            border-radius: 5px; /* Slightly rounded corners */
+        }
+
+        .btn {
+            border-radius: 5px; /* Rounded corners for buttons */
+        }
+
+        .btn-primary {
+            background-color: #007bff; /* Blue background */
+            border-color: #007bff; /* Blue border */
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+
+        .btn-success {
+            background-color: #28a745; /* Green background */
+            border-color: #28a745; /* Green border */
+        }
+
+        .btn-success:hover {
+            background-color: #218838; /* Darker green on hover */
+        }
+
+        /* Job Drives List Styles */
+        .job-drives {
+            margin-top: 20px; /* Space above the job drives section */
+        }
+
+        .job-drives ul {
+            list-style-type: none; /* Remove default list styles */
+            padding: 0; /* Remove default padding */
+        }
+
+        .job-drives li {
+            padding: 10px 0; /* Space between job drive items */
+        }
+
+        .job-drives a {
+            text-decoration: none; /* Remove underline from links */
+            color: #007bff; /* Link color */
+            font-weight: 500; /* Slightly bolder font for links */
+        }
+
+        .job-drives a:hover {
+            text-decoration: underline; /* Underline links on hover */
+        }
+
+        /* Table Styles */
+        .table {
+            width: 100%; /* Full width */
+            margin-top: 20px; /* Space above the table */
+            border-collapse: collapse; /* Collapse borders */
+        }
+
+        .table th, .table td {
+            padding: 12px; /* Padding inside table cells */
+            text-align: left; /* Left align text */
+            border-bottom: 1px solid #dee2e6; /* Light gray border */
+        }
+
+        .table th {
+            background-color: #f1f1f1; /* Light gray background for headers */
+            color: #495057; /* Darker gray for header text */
+        }
+
+        .table tbody tr:hover {
+            background-color: #f8f9fa; /* Highlight row on hover */
+        }
+
+        /* Button Styles for Change All */
+        button[type="submit"] {
+            margin-top: 20px; /* Space above the button */
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Placement Drives</h2>
+    
+        <!-- Search form for job drives (companies) -->
+        <form method="get" action="">
+            <input type="hidden" name="section" value="placement-details">
+            <input type="text" name="search" placeholder="Search companies..." value="{{ request.GET.search }}" class="form-control mb-3">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+    
+        <!-- List of Job Drives -->
+        <div class="job-drives mt-3">
+            <h3>Job Drives</h3>
+            <ul>
+                {% for job_drive in job_drives %}
+                    <li>
+                        <a href="?section=placement-details&job_drive_id={{ job_drive.id }}">
+                            {{ job_drive.company }} - {{ job_drive.title }}
+                        </a>
+                    </li>
+                {% empty %}
+                    <li>No job drives available.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    
+        <!-- If a job drive is selected, show students who applied -->
+        {% if selected_job_drive %}
+            <h3 class="mt-4">Students Applied for {{ selected_job_drive.title }}</h3>
+    
+            <!-- Bulk status update form -->
+            <form method="post" action="">
+                {% csrf_token %}
+                <table class="table mt-3">
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Applied At</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for applied_job in applied_jobs %}
+                            <tr>
+                                <td>{{ applied_job.student.full_name }}</td>
+                                <td>{{ applied_job.applied_at|date:"d M Y, h:i A" }}</td>
+                                <td>
+                                    <select name="status_{{ applied_job.id }}" class="form-select">
+                                        {% for value, display in applied_job.STATUS_CHOICES %}
+                                            <option value="{{ value }}" {% if applied_job.status == value %}selected{% endif %}>{{ display }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="3">No students have applied yet.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+    
+                <button type="submit" class="btn btn-success">Change All</button>
+            </form>
+        {% endif %}
+    </div>    
+</body>
+</html>
+

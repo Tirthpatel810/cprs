@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .chat-container {
+            border: 1px solid #ccc;
+            padding: 10px;
+            max-height: 60vh;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+            margin-bottom: 10px;
+        }
+    
+        .messages {
+            display: flex;
+            flex-direction: column;
+        }
+    
+        .message {
+            padding: 8px;
+            border-radius: 10px;
+            margin: 5px 0;
+            max-width: 70%;
+        }
+    
+        /* Message styling for the current user */
+        .my-message {
+            background-color: #d1f7c4; /* Light green for user's messages */
+            align-self: flex-end;
+            text-align: right;
+        }
+    
+        /* Message styling for others */
+        .other-message {
+            background-color: #e1e1e1; /* Gray for others' messages */
+            align-self: flex-start;
+            text-align: left;
+        }
+    
+        /* Add the timestamp to the message */
+        .timestamp {
+            font-size: 0.8em;
+            color: #888;
+            display: block;
+            margin-top: 5px;
+        }
+    
+        .message-form {
+            display: flex;
+            justify-content: space-between;
+        }
+    
+        .message-form input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+    
+        .message-form button {
+            margin-left: 10px;
+            padding: 10px 15px;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Discussion</h2>
+        
+        <div class="chat-container">
+            <div class="messages" id="messages">
+                {% for msg in msgs %}
+                    <div class="message {% if msg.username == request.session.username %}my-message{% else %}other-message{% endif %}">
+                        <strong>{{ msg.username }}</strong> 
+                        <span class="timestamp">{{ msg.timestamp|date:"d M Y, h:i A" }}</span>
+                        <p>{{ msg.content }}</p>
+                    </div>
+                {% empty %}
+                    <p>No messages yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    
+        <form method="POST" class="message-form">
+            {% csrf_token %}
+            <input type="text" name="message" placeholder="Type your message here..." required>
+            <button type="submit" class="btn btn-primary">Send</button>
+        </form>
+    </div>
+</body>
+</html>

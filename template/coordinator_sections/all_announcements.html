@@ -1,0 +1,140 @@
+<div class="all-announcements-section">
+    <h2 class="section-title">All Announcements</h2>
+
+    <!-- Search bar -->
+    <form method="GET" action="{% url 'coordinator_dashboard_section' 'all-announcements' %}" class="search-bar">
+        <input type="text" name="search" class="search-input" placeholder="Search announcements..." value="{{ search_query }}">
+        <button type="submit" class="btn btn-primary search-button">Search</button>
+    </form>
+
+    <hr class="section-divider">
+
+    <!-- Display all announcements -->
+    <div class="announcements-list">
+        <h3 class="recent-announcements-title">All Recent Announcements</h3>
+        {% for announcement in announcements %}
+            <div class="announcement-card">
+                <div class="announcement-header">
+                    <h4 class="announcement-title">{{ announcement.title }}</h4>
+                    <span class="announcement-date">{{ announcement.created_at|date:"d M Y, h:i a" }}</span>
+                </div>
+                <p class="announcement-message">{{ announcement.message }}</p>
+                <small class="announcement-posted-by">Posted by {{ announcement.posted_by.coordinator_name }}</small>
+            </div>
+            <hr class="announcement-divider">
+        {% empty %}
+            <p class="no-announcements">No announcements found.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .all-announcements-section {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        text-align: center;
+        color: #333;
+    }
+
+    .search-bar {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .search-input {
+        width: 70%;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        margin-right: 10px;
+    }
+
+    .search-button {
+        padding: 10px 20px;
+        font-size: 16px;
+    }
+
+    .section-divider {
+        margin: 20px 0;
+        border: 0;
+        height: 1px;
+        background: #ddd;
+    }
+
+    .announcements-list {
+        margin-top: 20px;
+    }
+
+    .recent-announcements-title {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #555;
+        text-align: center;
+    }
+
+    .announcement-card {
+        padding: 15px;
+        background-color: white;
+        border: 1px solid #e3e3e3;
+        border-radius: 6px;
+        margin-bottom: 15px;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .announcement-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .announcement-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    .announcement-date {
+        font-size: 14px;
+        color: #888;
+    }
+
+    .announcement-message {
+        font-size: 16px;
+        color: #444;
+        margin: 10px 0;
+        line-height: 1.5;
+    }
+
+    .announcement-posted-by {
+        font-size: 12px;
+        color: #777;
+    }
+
+    .announcement-divider {
+        border: 0;
+        height: 1px;
+        background: #ddd;
+        margin: 20px 0;
+    }
+
+    .no-announcements {
+        text-align: center;
+        font-size: 16px;
+        color: #999;
+        margin-top: 20px;
+    }
+</style>

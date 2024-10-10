@@ -1,0 +1,358 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Student Information</title>
+    <link rel="stylesheet" href="{% static 'edit_student.css' %}">
+    <style>
+        /* Basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .form-group-item {
+            width: 48%;
+            margin-bottom: 15px;
+        }
+
+        .form-group-item label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group-item input,
+        .form-group-item select,
+        .form-group-item textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .photo-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .photo-container img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .photo-container label {
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .form-fields {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .form-left,
+        .form-right {
+            width: 48%;
+        }
+
+        .form-left textarea,
+        .form-right textarea {
+            height: 80px;
+        }
+
+        .form-group-item textarea {
+            height: 50px;
+        }
+
+        .form-group-item input[type="file"] {
+            display: none;
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background-color: #4cae4c;
+        }
+
+        /* Checkbox styling */
+        .form-group-item input[type="checkbox"] {
+            width: auto;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Student Information</h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Profile Photo -->
+            <div class="form-group">
+                <div class="photo-container">
+                    <label for="profile_photo">
+                        <img id="profile-photo-preview" src="{% if student_info.profile_photo %}{{ student_info.profile_photo.url }}{% else %}{% static 'default_profile.png' %}{% endif %}" alt="Profile Photo">
+                        <input type="file" id="profile_photo" name="profile_photo" style="display: none;">
+                    </label>
+                </div>
+            </div>
+
+            <!-- Left and Right Column Fields -->
+            <div class="form-fields">
+                <div class="form-left">
+                    <div class="form-group-item">
+                        <label for="student_id">Student ID:</label>
+                        <input type="text" id="student_id" name="student_id" value="{{ student_info.student_id }}" required>
+                    </div>
+                    <div class="form-group-item">
+                        <label for="full_name">Full Name:</label>
+                        <input type="text" id="full_name" name="full_name" value="{{ student_info.full_name }}" required>
+                    </div>
+                    <div class="form-group-item">
+                        <label for="personal_email">Personal Email:</label>
+                        <input type="email" id="personal_email" name="personal_email" value="{{ student_info.personal_email }}" required>
+                    </div>
+                    <div class="form-group-item">
+                        <label for="phone_number">Phone Number:</label>
+                        <input type="text" id="phone_number" maxlength="10" name="phone_number" value="{{ student_info.phone_number }}" required>
+                    </div>
+                    <div class="form-group-item">
+                        <label for="date_of_birth">Date of Birth:</label>
+                        <input type="date" id="date_of_birth" name="date_of_birth" value="{{ student_info.date_of_birth|date:'Y-m-d' }}" required>
+                    </div>
+                    <div class="form-group-item">
+                        <label for="gender">Gender:</label>
+                        <select id="gender" name="gender" required>
+                            <option value="" {% if not student_info.gender %}selected{% endif %}>Select Gender</option>
+                            <option value="Male" {% if student_info.gender == 'Male' %}selected{% endif %}>Male</option>
+                            <option value="Female" {% if student_info.gender == 'Female' %}selected{% endif %}>Female</option>
+                            <option value="Other" {% if student_info.gender == 'Other' %}selected{% endif %}>Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group-item">
+                        <label for="permanent_address">Permanent Address:</label>
+                        <textarea id="permanent_address" name="permanent_address" required>{{ student_info.permanent_address }}</textarea>
+                    </div>
+                    <div class="form-group-item">
+                        <label for="current_address">Current Address:</label>
+                        <textarea id="current_address" name="current_address">{{ student_info.current_address }}</textarea>
+                        <label for="same_as_permanent">
+                            <input type="checkbox" id="same_as_permanent" name="same_as_permanent" {% if student_info.current_address == student_info.permanent_address %}checked{% endif %}>
+                            Same as Permanent Address
+                        </label>
+                    </div>
+                    <div class="form-group-item">
+                        <label for="department">Department:</label>
+                        <input type="text" id="department" name="department" value="{{ student_info.department }}" readonly>
+                    </div>
+                </div>
+
+                <div class="form-right">
+                    <div class="form-group-item">
+                        <label for="degree_program">Degree Program:</label>
+                        <input type="text" id="degree_program" name="degree_program" value="{{ student_info.degree_program }}">
+                    </div>
+                    <div class="form-group-item">
+                        <label for="year_of_enrollment">Year of Enrollment:</label>
+                        <input type="number" id="year_of_enrollment" name="year_of_enrollment" value="{{ student_info.year_of_enrollment }}">
+                    </div>
+                    <div class="form-group-item">
+                        <label for="year_of_graduation">Year of Graduation:</label>
+                        <input type="number" id="year_of_graduation" name="year_of_graduation" value="{{ student_info.year_of_graduation }}">
+                    </div>
+                    <div class="form-group-item">
+                        <label for="tenth_percentage">10th Percentage:</label>
+                        <input type="number" step="0.01" id="tenth_percentage" name="tenth_percentage" value="{{ student_info.tenth_percentage }}">
+                    </div>
+                    <div class="form-group-item">
+                        <label for="tenth_passing_year">10th Passing Year:</label>
+                        <input type="number" id="tenth_passing_year" name="tenth_passing_year" value="{{ student_info.tenth_passing_year }}">
+                    </div>
+                    <div class="form-group-item">
+                        <label for="tenth_school">10th School:</label>
+                        <input type="text" id="tenth_school" name="tenth_school" value="{{ student_info.tenth_school }}">
+                    </div>
+                    <div class="form-group-item">
+                        <label for="twelfth_stream">12th Stream:</label>
+                        <select id="twelfth_stream" name="twelfth_stream">
+                            <option value="" {% if not student_info.twelfth_stream %}selected{% endif %}>Select Stream</option>
+                            <option value="Science" {% if student_info.twelfth_stream == 'Science' %}selected{% endif %}>Science</option>
+                            <option value="Commerce" {% if student_info.twelfth_stream == 'Commerce' %}selected{% endif %}>Commerce</option>
+                            <option value="Arts" {% if student_info.twelfth_stream == 'Arts' %}selected{% endif %}>Arts</option>
+                            <option value="Other" {% if student_info.twelfth_stream == 'Other' %}selected{% endif %}>Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group-item">
+                        <label for="twelfth_percentage">12th Percentage:</label>
+                        <input type="number" step="0.01" id="twelfth_percentage" name="twelfth_percentage" value="{{ student_info.twelfth_percentage }}">
+                    </div>
+                    <div class="form-group-item">
+                        <label for="twelfth_passing_year">12th Passing Year:</label>
+                        <input type="number" id="twelfth_passing_year" name="twelfth_passing_year" value="{{ student_info.twelfth_passing_year }}">
+                    </div>
+                    <div class="form-group-item">
+                        <label for="twelfth_school">12th School:</label>
+                        <input type="text" id="twelfth_school" name="twelfth_school" value="{{ student_info.twelfth_school }}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group-item">
+                <label for="ug_course">UG Course:</label>
+                <input type="text" id="ug_course" name="ug_course" value="{{ student_info.ug_course }}">
+            </div>
+            
+            <div class="form-group-item">
+                <label for="ug_passing_year">UG Passing Year:</label>
+                <input type="number" id="ug_passing_year" name="ug_passing_year" value="{{ student_info.ug_passing_year }}">
+            </div>
+            
+            <div class="form-group-item">
+                <label for="ug_cgpa">UG CGPA:</label>
+                <input type="number" step="0.01" id="ug_cgpa" name="ug_cgpa" value="{{ student_info.ug_cgpa }}">
+            </div>
+            
+            <div class="form-group-item">
+                <label for="ug_college_university">UG College/University:</label>
+                <input type="text" id="ug_college_university" name="ug_college_university" value="{{ student_info.ug_college_university }}">
+            </div>
+            
+            <div class="form-group-item">
+                <label for="other_course">Other Course:</label>
+                <input type="text" id="other_course" name="other_course" value="{{ student_info.other_course }}">
+            </div>
+            
+            <div class="form-group-item">
+                <label for="other_passing_year">Other Passing Year:</label>
+                <input type="number" id="other_passing_year" name="other_passing_year" value="{{ student_info.other_passing_year }}">
+            </div>
+            
+            <div class="form-group-item">
+                <label for="other_cgpa">Other CGPA:</label>
+                <input type="number" step="0.01" id="other_cgpa" name="other_cgpa" value="{{ student_info.other_cgpa }}">
+            </div>
+            
+            <div class="form-group-item">
+                <label for="other_college_university">Other College/University:</label>
+                <input type="text" id="other_college_university" name="other_college_university" value="{{ student_info.other_college_university }}">
+            </div>
+
+            <div class="form-group-item">
+                <label for="backlogs">Backlogs:</label>
+                <input type="number" id="backlogs" name="backlogs" value="{{ student_info.backlogs }}">
+            </div>
+            <div class="form-group-item">
+                <label for="skills">Skills:</label>
+                <textarea id="skills" name="skills">{{ student_info.skills }}</textarea>
+            </div>
+            <div class="form-group-item">
+                <label for="certifications">Certifications:</label>
+                <textarea id="certifications" name="certifications">{{ student_info.certifications }}</textarea>
+            </div>
+            <div class="form-group-item">
+                <label for="internship_details">Internship Details:</label>
+                <textarea id="internship_details" name="internship_details">{{ student_info.internship_details }}</textarea>
+            </div>
+            <div class="form-group-item">
+                <label for="projects">Projects:</label>
+                <textarea id="projects" name="projects">{{ student_info.projects }}</textarea>
+            </div>
+            <div class="form-group-item">
+                <label for="achievements">Achievements:</label>
+                <textarea id="achievements" name="achievements">{{ student_info.achievements }}</textarea>
+            </div>
+            <div class="form-group-item">
+                <label for="extracurricular_activities">Extracurricular Activities:</label>
+                <textarea id="extracurricular_activities" name="extracurricular_activities">{{ student_info.extracurricular_activities }}</textarea>
+            </div>
+            <div class="form-group-item">
+                <label for="resume">Upload Resume (PDF)</label>
+                <input type="file" id="resume" name="resume" accept="application/pdf">
+            </div>
+            <div class="form-group-item">
+                <label for="linkedin_profile">LinkedIn Profile:</label>
+                <input type="url" id="linkedin_profile" name="linkedin_profile" value="{{ student_info.linkedin_profile }}">
+            </div>
+            <div class="form-group-item">
+                <label for="github_profile">GitHub Profile:</label>
+                <input type="url" id="github_profile" name="github_profile" value="{{ student_info.github_profile }}">
+            </div>
+            <div class="form-group-item">
+                <label for="placement_preferences">Placement Preferences:</label>
+                <textarea id="placement_preferences" name="placement_preferences">{{ student_info.placement_preferences }}</textarea>
+            </div>
+            <div class="form-group-item">
+                <label for="placed_status">Placed Status:</label>
+                <input type="text" id="placed_status" name="placed_status" value="{{ student_info.placed_status }}">
+            </div>
+            <div class="form-group-item">
+                <label for="job_offers">Job Offers:</label>
+                <textarea id="job_offers" name="job_offers">{{ student_info.job_offers }}</textarea>
+            </div>
+            <div class="form-group-item">
+                <label for="nationality">Nationality:</label>
+                <input type="text" id="nationality" name="nationality" value="{{ student_info.nationality }}">
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="submit-btn">Save Changes</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const profilePhotoInput = document.getElementById("profile_photo");
+        const profilePhotoPreview = document.getElementById("profile-photo-preview");
+
+        profilePhotoInput.addEventListener("change", function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    profilePhotoPreview.src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>

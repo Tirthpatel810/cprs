@@ -1,0 +1,296 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Recruiter</title>
+    <style>
+        .main-content {
+            width: 75%;
+        }
+
+        /* Search and Sort Container */
+        .search-sort-container {
+            margin-top: -20px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .search-sort-container form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px; /* Adjust space between elements */
+        }
+        
+        .search-sort-container input[type="text"],
+        .search-sort-container select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 200px;
+        }
+        
+        .search-sort-container button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .search-sort-container button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Container for the grid */
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        /* Styling for each card */
+        .card {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            width: 200px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            position: relative;
+        }
+
+        /* Styling for images */
+        .card-img-top {
+            height: 150px;
+            width: 100%;
+            object-fit: contain;
+            background-color: #f0f0f0;
+        }
+
+        /* Styling for the card body */
+        .card-body {
+            padding: 10px;
+            z-index: 1;
+            position: relative;
+            background-color: white;
+            word-wrap: break-word; /* Ensures long words break to fit within the container */
+        }
+
+        /* Styling for email and department text */
+        .card-text {
+            font-size: 14px; /* Adjust the font size if needed */
+            color: #333; /* Update the text color */
+            overflow-wrap: break-word; /* Breaks long words to prevent overflow */
+        }
+
+        /* Optional: Add ellipsis for overflow text */
+        .card-text p {
+            text-overflow: ellipsis; /* Add ellipsis if text is too long */
+            white-space: nowrap; /* Prevents text from wrapping */
+            overflow: hidden; /* Hides overflow text */
+        }
+
+
+        /* Expanded Card Details */
+        .card.expanded {
+            width: 300px; /* Increase width when expanded */
+        }
+
+        .card .card-expanded-details {
+            display: none;
+        }
+
+        .card.expanded .card-expanded-details {
+            display: block;
+            padding: 10px;
+            background-color: #f8f9fa;
+        }
+
+        /* Show/Hide Link */
+        .show-more-btn {
+            text-align: center;
+            display: block;
+            margin: 10px 0;
+            cursor: pointer;
+            color: #3498db;
+        }
+
+        .show-more-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* Hover overlay details */
+        .card-hover-details {
+            display: none; 
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 20px;
+            z-index: 1;
+            overflow: auto;
+        }
+
+        .card:hover .card-hover-details {
+            display: block;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        /* Pagination */
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .pagination ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .pagination li {
+            display: inline-block;
+            margin: 0 5px;
+        }
+
+        .pagination a {
+            text-decoration: none;
+            padding: 8px 12px;
+            background-color: white;
+            color: black;
+            border-radius: 4px;
+        }
+
+        .pagination a:hover {
+            background-color: #0073df;
+        }
+
+        .pagination .active a {
+            background-color: rgb(75, 187, 231);
+        }
+
+        /* Style for card buttons */
+        .card-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .card-buttons a {
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            color: white;
+        }
+
+        .edit-btn {
+            background-color: #3498db;
+        }
+
+        .delete-btn {
+            background-color: #e74c3c;
+        }
+
+        .edit-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <main class="main-content">
+            <!-- Search and Sort Container -->
+            <div class="search-sort-container">
+                <form method="GET" action="">
+                    <input type="text" name="search" placeholder="Search coordinators..." value="{{ search_query }}">
+                    <select name="sort">
+                        <option value="">Sort by</option>
+                        <option value="name" {% if sort_order == 'name' %}selected{% endif %}>Name</option>
+                        <option value="email" {% if sort_order == 'email' %}selected{% endif %}>Email</option>
+                        <option value="department" {% if sort_order == 'department' %}selected{% endif %}>Department</option>
+                    </select>
+                    <button type="submit">Apply</button>
+                </form>
+            </div>
+
+            <!-- Container for the grid -->
+            <div class="container">
+                {% for coordinator in coordinators %}
+                <div class="card">
+                    <img src="{% if coordinator.profile_photo %}{{ coordinator.profile_photo.url }}{% else %}{% static 'default_profile.png' %}{% endif %}" class="card-img-top" alt="Profile Photo">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ coordinator.coordinator_name|default:"NA" }}</h5>
+                        <p class="card-text">
+                            Email: {{ coordinator.email|default:"NA" }}<br>
+                            Department: {{ coordinator.department|default:"NA" }}
+                        </p>
+                        <div class="card-buttons">
+                            <a href="{% url 'edit_coordinator' coordinator.id %}" class="edit-btn">Edit</a>
+                            <a href="{% url 'delete_coordinator' coordinator.id %}" class="delete-btn" onclick="return confirm('Are you sure you want to delete this coordinator?');">Delete</a>
+                        </div>
+                        <a href="#" class="show-more-btn" onclick="toggleDetails(event, {{ coordinator.id }}); return false;">View More</a>
+                    </div>
+                    <div class="card-expanded-details" id="details-{{ coordinator.id }}">
+                        <p>Mobile: {{ coordinator.mobile_number|default:"NA" }}</p>
+                        <p>Address: {{ coordinator.address|default:"NA" }}</p>
+                        <p>DOB: {{ coordinator.date_of_birth|date:"d M, Y"|default:"NA" }}</p>
+                        <p>Gender: {{ coordinator.gender|default:"NA" }}</p>
+                        <p>Hire Date: {{ coordinator.hire_date|date:"d M, Y"|default:"NA" }}</p>
+                        <a href="#" class="show-more-btn" onclick="toggleDetails(event, {{ coordinator.id }}); return false;">Show Less</a>
+                    </div>
+                </div>
+                {% empty %}
+                    <p>No Recruter found.</p>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <ul>
+                    {% if coordinators.has_previous %}
+                        <li><a href="?search={{ search_query }}&sort={{ sort_order }}&page={{ coordinators.previous_page_number }}">Previous</a></li>
+                    {% endif %}
+                    {% for num in coordinators.paginator.page_range %}
+                        <li class="{% if coordinators.number == num %}active{% endif %}"><a href="?search={{ search_query }}&sort={{ sort_order }}&page={{ num }}">{{ num }}</a></li>
+                    {% endfor %}
+                    {% if coordinators.has_next %}
+                        <li><a href="?search={{ search_query }}&sort={{ sort_order }}&page={{ coordinators.next_page_number }}">Next</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </main>
+    </div>
+    <script>
+        function toggleDetails(event, id) {
+            event.preventDefault();
+            var card = document.querySelector('#details-' + id).parentNode;
+            var details = document.querySelector('#details-' + id);
+            
+            if (card.classList.contains('expanded')) {
+                card.classList.remove('expanded');
+            } else {
+                card.classList.add('expanded');
+            }
+        }
+        </script>        
+</body>
+</html>
