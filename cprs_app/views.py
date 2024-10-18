@@ -817,7 +817,8 @@ def coordinator_dashboard(request, section=None):
     
     elif section == 'placement-details':
         search_query = request.GET.get('search', '')
-        
+        search_query2 = request.GET.get('search_student', '')
+
         # Job Drives filtering based on search
         job_drives = JobDrive.objects.filter(company__icontains=search_query)
         context['job_drives'] = job_drives
@@ -825,11 +826,13 @@ def coordinator_dashboard(request, section=None):
         job_drive_id = request.GET.get('job_drive_id')
         if job_drive_id:
             job_drive = get_object_or_404(JobDrive, pk=job_drive_id)
-            
-            # Students filtering based on search
+
+            # Students filtering based on search (search by student_id or full_name)
             applied_jobs = AppliedJob.objects.filter(
-                job_drive=job_drive,
-                student__full_name__icontains=search_query
+                job_drive=job_drive
+            ).filter(
+                Q(student__full_name__icontains=search_query2) |
+                Q(student__student_id__icontains=search_query2)
             )
 
             context['selected_job_drive'] = job_drive
@@ -845,8 +848,7 @@ def coordinator_dashboard(request, section=None):
 
                         if new_status == 'selected':
                             applied_job.student.placed_status = True
-                            print(applied_job.student.job_offers)
-                            if applied_job.student.job_offers is None or applied_job.student.job_offers == "":
+                            if not applied_job.student.job_offers:
                                 applied_job.student.job_offers = applied_job.job_drive.company
                             else:
                                 selected_for_jobs = applied_job.student.job_offers.split(',')
@@ -860,6 +862,7 @@ def coordinator_dashboard(request, section=None):
                 return redirect('coordinator_dashboard_section', section='placement-details')
 
         context['section'] = 'coordinator_sections/placement_details.html'
+
 
     elif section == 'job-openings':
         # Get search query and sort order from the request
