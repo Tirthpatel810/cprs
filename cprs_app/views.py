@@ -17,6 +17,14 @@ from datetime import datetime, timedelta
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
+from django.http import HttpResponse
+from io import BytesIO
 
 from functools import wraps
 
@@ -838,6 +846,13 @@ def coordinator_dashboard(request, section=None):
             context['selected_job_drive'] = job_drive
             context['applied_jobs'] = applied_jobs
 
+            # Check if the user wants to generate the PDF
+            if 'generate_report' in request.GET:
+                buffer = generate_student_report(job_drive,applied_jobs)
+                response = HttpResponse(buffer, content_type='application/pdf')
+                response['Content-Disposition'] = f'attachment; filename="applied students {job_drive.company}.pdf"'
+                return response
+
             # Bulk status update when "Change All" button is clicked
             if request.method == 'POST':
                 for applied_job in applied_jobs:
@@ -1052,3 +1067,84 @@ def widrow_application(request,job_id):
     job.delete()
     messages.success(request, 'Application withdrawn successfully.')
     return redirect('student_dashboard_section', section='applied-jobs')
+
+def generate_student_report(job_drive, applied_jobs):
+    buffer = BytesIO()
+
+    # Set up PDF document with custom margins
+    doc = SimpleDocTemplate(buffer, pagesize=A4, leftMargin=40, rightMargin=40, topMargin=50, bottomMargin=50)
+    elements = []
+
+    # Define basic styles and custom paragraph styles
+    styles = getSampleStyleSheet()
+    
+    title_style = ParagraphStyle(
+        'TitleStyle',
+        fontSize=18,
+        leading=22,
+        alignment=1,  # Center alignment
+        textColor=colors.HexColor('#3a3a3a'),
+        spaceAfter=20
+    )
+
+    header_style = ParagraphStyle(
+        'HeaderStyle',
+        fontSize=12,
+        leading=16,
+        textColor=colors.HexColor('#003366'),
+        spaceBefore=12,
+        spaceAfter=6
+    )
+
+    info_style = ParagraphStyle(
+        'InfoStyle',
+        fontSize=10,
+        leading=14,
+        textColor=colors.HexColor('#333333'),
+        spaceAfter=5
+    )
+
+    # Add title with company name
+    title = Paragraph(f"Students Applied for {job_drive.company}", title_style)
+    elements.append(title)
+
+    # Add a table for better formatting of each student's details
+    for applied_job in applied_jobs:
+        student_info = applied_job.student
+
+        # Student Info Block Title
+        student_title = Paragraph(f"<b>{student_info.full_name}</b> ({student_info.student_id})", header_style)
+        elements.append(student_title)
+
+        # Create student information as a table for better alignment
+        data = [
+            [Paragraph("<b>Details</b>", info_style), Paragraph('<b>Student Information</b>', info_style)],
+            [Paragraph("<b>Mobile:</b>", info_style), Paragraph(student_info.phone_number or 'NA', info_style)],
+            [Paragraph("<b>Email:</b>", info_style), Paragraph(student_info.student_profile.email or 'NA', info_style)],
+            [Paragraph("<b>College Email:</b>", info_style), Paragraph(student_info.college_email, info_style)],
+            [Paragraph("<b>Address:</b>", info_style), Paragraph(student_info.current_address or student_info.permanent_address or 'NA', info_style)],
+            [Paragraph("<b>Department:</b>", info_style), Paragraph(student_info.department, info_style)],
+            [Paragraph("<b>Placed Status:</b>", info_style), Paragraph('Placed' if student_info.placed_status else 'Not Placed', info_style)]
+        ]
+
+        # Table with some custom styles
+        table = Table(data, colWidths=[1.5 * inch, 4.5 * inch])
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f0f0f0')),  # Light background for labels
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#000000')),    # Dark text color
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),                          # Left alignment for text
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),                   # Font for the entire table
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#e0e0e0')),   # Light grid color for table
+        ]))
+
+        elements.append(table)
+        elements.append(Spacer(1, 12))  # Space after each student's info
+    
+    # Build the PDF document
+    doc.build(elements)
+
+    # Return the generated PDF
+    buffer.seek(0)
+    return buffer
