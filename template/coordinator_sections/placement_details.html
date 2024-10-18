@@ -59,6 +59,7 @@
             margin-top: 10px;
             color: #fff;
             border: none;
+            margin-left: 10px;
         }
 
         .btn-success:hover {
@@ -116,13 +117,15 @@
 
         <!-- If a job drive is selected, show students who applied -->
         {% if selected_job_drive %}
-            <h3 class="mt-4">Students Applied for {{ selected_job_drive.title }}</h3>
+            <h3 class="mt-4">Students Applied for {{ selected_job_drive.title }} in {{ selected_job_drive.company }}</h3>
+
             <!-- Search form for students within selected job drive -->
             <form method="get" action="" class="form-container">
                 <input type="hidden" name="section" value="placement-details">
                 <input type="hidden" name="job_drive_id" value="{{ selected_job_drive.id }}">
                 <input type="text" name="search_student" placeholder="Search student..." value="{{ request.GET.search_student }}" class="form-control">
                 <button type="submit" class="btn btn-primary">Search</button>
+                <button type="submit" name="generate_report" class="btn btn-success">Download Report (PDF)</button>
             </form>
 
             <!-- Bulk status update form -->
