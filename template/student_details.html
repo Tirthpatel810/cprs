@@ -131,9 +131,13 @@
     <div class="section">
         <h2 class="section-title">Other Information</h2>
         <div class="section-content">
-            <p><span>Resume:</span> <a href="{{ student.resume.url|default:'#' }}">View Resume</a></p>
-            <p><span>LinkedIn:</span> <a href="{{ student.linkedin_profile|default:'#' }}">{{ student.linkedin_profile|default:"NA" }}</a></p>
-            <p><span>GitHub:</span> <a href="{{ student.github_profile|default:'#' }}">{{ student.github_profile|default:"NA" }}</a></p>
+            <p><span>Resume:</span> 
+                <a href="{% if student.resume %}{{ student.resume.url }}{% else %}#{% endif %}">
+                    {% if student.resume %}View Resume{% else %}Not Available{% endif %}
+                </a>
+            </p>
+            <p><span>LinkedIn:</span> <a href="{{ student.linkedin_profile|default:'#' }}">{{ student.linkedin_profile|default:"Not Available" }}</a></p>
+            <p><span>GitHub:</span> <a href="{{ student.github_profile|default:'#' }}">{{ student.github_profile|default:"Not Available" }}</a></p>
             <p><span>Placement Preferences:</span> {{ student.placement_preferences|default:"NA" }}</p>
             <p><span>Placed Status:</span> {{ student.placed_status|default:"NA" }}</p>
             <p><span>Job Offers:</span> {{ student.job_offers|default:"NA" }}</p>

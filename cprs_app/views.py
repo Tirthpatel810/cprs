@@ -467,6 +467,7 @@ def student_dashboard(request, section=None):
     
         if request.method == 'POST':
             student_info.student_id = request.POST.get('student_id')
+
             student_info.full_name = request.POST.get('full_name')
             student_info.personal_email = request.POST.get('personal_email')
             student_info.phone_number = request.POST.get('phone_number')
@@ -480,22 +481,79 @@ def student_dashboard(request, section=None):
             student_info.permanent_address = request.POST.get('permanent_address')
             student_info.current_address = request.POST.get('current_address', student_info.permanent_address if request.POST.get('same_as_permanent') else student_info.current_address)
             student_info.degree_program = request.POST.get('degree_program')
-            student_info.year_of_enrollment = request.POST.get('year_of_enrollment')
-            student_info.year_of_graduation = request.POST.get('year_of_graduation')
-            student_info.tenth_percentage = request.POST.get('tenth_percentage')
-            student_info.tenth_passing_year = request.POST.get('tenth_passing_year')
+
+            year_of_enrollment = request.POST.get('year_of_enrollment')
+            if year_of_enrollment.isdigit():
+                student_info.year_of_enrollment = int(year_of_enrollment)
+            else:
+                student_info.year_of_enrollment = 0
+
+            year_of_graduation = request.POST.get('year_of_graduation')
+            if year_of_graduation.isdigit():
+                student_info.year_of_graduation = int(year_of_graduation)
+            else:
+                student_info.year_of_graduation = 0
+            
+            tenth_percentage = request.POST.get('tenth_percentage')
+            if tenth_percentage.isdigit():
+                student_info.tenth_percentage = float(tenth_percentage)
+            else:
+                student_info.tenth_percentage = 0
+            
+            tenth_passing_year = request.POST.get('tenth_passing_year')
+            if tenth_passing_year.isdigit():
+                student_info.tenth_passing_year = int(tenth_passing_year)
+            else:
+                student_info.tenth_passing_year = 0
+            
             student_info.tenth_school = request.POST.get('tenth_school')
             student_info.twelfth_stream = request.POST.get('twelfth_stream')
-            student_info.twelfth_percentage = request.POST.get('twelfth_percentage')
-            student_info.twelfth_passing_year = request.POST.get('twelfth_passing_year')
+
+            
+            twelfth_percentage = request.POST.get('twelfth_percentage')
+            if twelfth_percentage.isdigit():
+                student_info.twelfth_percentage = float(twelfth_percentage)
+            else:
+                student_info.twelfth_percentage = 0
+            
+            twelfth_passing_year = request.POST.get('twelfth_passing_year')
+            if twelfth_passing_year.isdigit():
+                student_info.twelfth_passing_year = int(twelfth_passing_year)
+            else:
+                student_info.twelfth_passing_year = 0
+            
             student_info.twelfth_school = request.POST.get('twelfth_school')
             student_info.ug_course = request.POST.get('ug_course')
-            student_info.ug_passing_year = request.POST.get('ug_passing_year')
-            student_info.ug_cgpa = request.POST.get('ug_cgpa')
+
+            
+            ug_passing_year = request.POST.get('ug_passing_year')
+            if ug_passing_year.isdigit():
+                student_info.ug_passing_year = int(ug_passing_year)
+            else:
+                student_info.ug_passing_year = 0
+
+            ug_cgpa = request.POST.get('ug_cgpa')
+            if ug_cgpa.isdigit():
+                student_info.ug_cgpa = float(ug_cgpa)
+            else:
+                student_info.ug_cgpa = 0
+            
             student_info.ug_college_university = request.POST.get('ug_college_university')
             student_info.other_course = request.POST.get('other_course')
-            student_info.other_passing_year = request.POST.get('other_passing_year')
-            student_info.other_cgpa = request.POST.get('other_cgpa')
+
+            
+            other_passing_year = request.POST.get('other_passing_year')
+            if other_passing_year.isdigit():
+                student_info.other_passing_year = int(other_passing_year)
+            else:
+                student_info.other_passing_year = 0
+            
+            other_cgpa = request.POST.get('other_cgpa')
+            if other_cgpa.isdigit():
+                student_info.other_cgpa = float(other_cgpa)
+            else:
+                student_info.other_cgpa = 0
+            
             student_info.other_college_university = request.POST.get('other_college_university')
             student_info.backlogs = request.POST.get('backlogs')
             student_info.skills = request.POST.get('skills')
@@ -526,6 +584,7 @@ def student_dashboard(request, section=None):
                     return redirect('student_dashboard_section', section='view-profile')
             except ValidationError as e:
                 messages.error(request, f"Error updating student: {e}")
+            
         context['student_info'] = student_info
         context['section'] = 'edit_student.html'
 
@@ -655,66 +714,129 @@ def view_student_details(request, pk):
 @login_required
 def edit_student(request, pk):
     student_info = get_object_or_404(StudentInformation, college_email=pk)
-    
     if request.method == 'POST':
-        student_info.student_id = request.POST.get('student_id')
-        student_info.full_name = request.POST.get('full_name')
-        student_info.personal_email = request.POST.get('personal_email')
-        student_info.phone_number = request.POST.get('phone_number')
-        date_of_birth_str = request.POST.get('date_of_birth')
-        try:
-            dob_formatted = datetime.strptime(date_of_birth_str, '%Y-%m-%d').strftime('%Y-%m-%d')
-        except ValueError:
-            dob_formatted = datetime.strptime(date_of_birth_str, '%d/%m/%Y').strftime('%Y-%m-%d')
-        student_info.date_of_birth = dob_formatted
-        student_info.gender = request.POST.get('gender')
-        student_info.permanent_address = request.POST.get('permanent_address')
-        student_info.current_address = request.POST.get('current_address', student_info.permanent_address if request.POST.get('same_as_permanent') else student_info.current_address)
-        student_info.degree_program = request.POST.get('degree_program')
-        student_info.year_of_enrollment = request.POST.get('year_of_enrollment')
-        student_info.year_of_graduation = request.POST.get('year_of_graduation')
-        student_info.tenth_percentage = request.POST.get('tenth_percentage')
-        student_info.tenth_passing_year = request.POST.get('tenth_passing_year')
-        student_info.tenth_school = request.POST.get('tenth_school')
-        student_info.twelfth_stream = request.POST.get('twelfth_stream')
-        student_info.twelfth_percentage = request.POST.get('twelfth_percentage')
-        student_info.twelfth_passing_year = request.POST.get('twelfth_passing_year')
-        student_info.twelfth_school = request.POST.get('twelfth_school')
-        student_info.ug_course = request.POST.get('ug_course')
-        student_info.ug_passing_year = request.POST.get('ug_passing_year')
-        student_info.ug_cgpa = request.POST.get('ug_cgpa')
-        student_info.ug_college_university = request.POST.get('ug_college_university')
-        student_info.other_course = request.POST.get('other_course')
-        student_info.other_passing_year = request.POST.get('other_passing_year')
-        student_info.other_cgpa = request.POST.get('other_cgpa')
-        student_info.other_college_university = request.POST.get('other_college_university')
-        student_info.backlogs = request.POST.get('backlogs')
-        student_info.skills = request.POST.get('skills')
-        student_info.certifications = request.POST.get('certifications')
-        student_info.internship_details = request.POST.get('internship_details')
-        student_info.projects = request.POST.get('projects')
-        student_info.linkedin_profile = request.POST.get('linkedin_profile')
-        student_info.github_profile = request.POST.get('github_profile')
-        student_info.placement_preferences = request.POST.get('placement_preferences')
-        student_info.placed_status = request.POST.get('placed_status')
-        student_info.job_offers = request.POST.get('job_offers')
-        student_info.date_of_last_update = datetime.now()
-        student_info.nationality = request.POST.get('nationality')
 
-        # Handle profile photo upload
-        if request.FILES.get('profile_photo'):
-            student_info.profile_photo = request.FILES.get('profile_photo')
+            student_info.student_id = request.POST.get('student_id')
+            student_info.full_name = request.POST.get('full_name')
+            student_info.personal_email = request.POST.get('personal_email')
+            student_info.phone_number = request.POST.get('phone_number')
+            date_of_birth_str = request.POST.get('date_of_birth')
+            try:
+                dob_formatted = datetime.strptime(date_of_birth_str, '%Y-%m-%d').strftime('%Y-%m-%d')
+            except ValueError:
+                dob_formatted = datetime.strptime(date_of_birth_str, '%d/%m/%Y').strftime('%Y-%m-%d')
+            student_info.date_of_birth = dob_formatted
+            student_info.gender = request.POST.get('gender')
+            student_info.permanent_address = request.POST.get('permanent_address')
+            student_info.current_address = request.POST.get('current_address', student_info.permanent_address if request.POST.get('same_as_permanent') else student_info.current_address)
+            student_info.degree_program = request.POST.get('degree_program')
 
-        try:
-            student_info.save()
-            messages.success(request, 'Student information updated successfully!')
-            email = request.session['username']
-            if CoordinatorProfile.objects.filter(email=email).exists():
-                return redirect('coordinator_dashboard_section', section='manage-students')
-            else:   
-                return redirect('view_students')
-        except ValidationError as e:
-            messages.error(request, f"Error updating student: {e}")
+            year_of_enrollment = request.POST.get('year_of_enrollment')
+            if year_of_enrollment.isdigit():
+                student_info.year_of_enrollment = int(year_of_enrollment)
+            else:
+                student_info.year_of_enrollment = 0
+
+            year_of_graduation = request.POST.get('year_of_graduation')
+            if year_of_graduation.isdigit():
+                student_info.year_of_graduation = int(year_of_graduation)
+            else:
+                student_info.year_of_graduation = 0
+            
+            tenth_percentage = request.POST.get('tenth_percentage')
+            if tenth_percentage.isdigit():
+                student_info.tenth_percentage = float(tenth_percentage)
+            else:
+                student_info.tenth_percentage = 0
+            
+            tenth_passing_year = request.POST.get('tenth_passing_year')
+            if tenth_passing_year.isdigit():
+                student_info.tenth_passing_year = int(tenth_passing_year)
+            else:
+                student_info.tenth_passing_year = 0
+            
+            student_info.tenth_school = request.POST.get('tenth_school')
+            student_info.twelfth_stream = request.POST.get('twelfth_stream')
+
+            
+            twelfth_percentage = request.POST.get('twelfth_percentage')
+            if twelfth_percentage.isdigit():
+                student_info.twelfth_percentage = float(twelfth_percentage)
+            else:
+                student_info.twelfth_percentage = 0
+            
+            twelfth_passing_year = request.POST.get('twelfth_passing_year')
+            if twelfth_passing_year.isdigit():
+                student_info.twelfth_passing_year = int(twelfth_passing_year)
+            else:
+                student_info.twelfth_passing_year = 0
+            
+            student_info.twelfth_school = request.POST.get('twelfth_school')
+            student_info.ug_course = request.POST.get('ug_course')
+
+            
+            ug_passing_year = request.POST.get('ug_passing_year')
+            if ug_passing_year.isdigit():
+                student_info.ug_passing_year = int(ug_passing_year)
+            else:
+                student_info.ug_passing_year = 0
+
+            ug_cgpa = request.POST.get('ug_cgpa')
+            if ug_cgpa.isdigit():
+                student_info.ug_cgpa = float(ug_cgpa)
+            else:
+                student_info.ug_cgpa = 0
+            
+            student_info.ug_college_university = request.POST.get('ug_college_university')
+            student_info.other_course = request.POST.get('other_course')
+
+            
+            other_passing_year = request.POST.get('other_passing_year')
+            if other_passing_year.isdigit():
+                student_info.other_passing_year = int(other_passing_year)
+            else:
+                student_info.other_passing_year = 0
+            
+            other_cgpa = request.POST.get('other_cgpa')
+            if other_cgpa.isdigit():
+                student_info.other_cgpa = float(other_cgpa)
+            else:
+                student_info.other_cgpa = 0
+            
+            student_info.other_college_university = request.POST.get('other_college_university')
+            student_info.backlogs = request.POST.get('backlogs')
+            student_info.skills = request.POST.get('skills')
+            student_info.certifications = request.POST.get('certifications')
+            student_info.internship_details = request.POST.get('internship_details')
+            student_info.projects = request.POST.get('projects')
+            student_info.extracurricular_activities = request.POST.get('extracuronal_activities')
+            student_info.achievements = request.POST.get('achievements')
+            student_info.linkedin_profile = request.POST.get('linkedin_profile')
+            student_info.github_profile = request.POST.get('github_profile')
+            student_info.placement_preferences = request.POST.get('placement_preferences')
+            student_info.placed_status = request.POST.get('placed_status')
+            student_info.job_offers = request.POST.get('job_offers')
+            student_info.date_of_last_update = datetime.now()
+            student_info.nationality = request.POST.get('nationality')
+
+            # Handle profile photo upload
+            if request.FILES.get('profile_photo'):
+                student_info.profile_photo = request.FILES.get('profile_photo')
+            if request.FILES.get('resume'):
+                student_info.resume = request.FILES.get('resume')   
+
+            try:
+                student_info.save()
+                messages.success(request, 'Student information updated successfully!')
+                email = request.session['username']
+                if StudentProfile.objects.filter(email=email).exists():
+                    return redirect('student_dashboard_section', section='view-profile')
+                elif CoordinatorProfile.objects.filter(email=email).exists():
+                    return redirect('coordinator_dashboard_section', section='manage-students')
+                else:
+                    return redirect('admin_dashboard_section', section='view-students')
+            except ValidationError as e:
+                messages.error(request, f"Error updating student: {e}")
     
     return render(request, 'edit_student.html', {'student_info': student_info})
 
@@ -808,6 +930,12 @@ def coordinator_dashboard(request, section=None):
         context['announcements'] = announcements.order_by('-created_at')
         context['search_query'] = search_query
         context['section'] = 'coordinator_sections/all_announcements.html'
+
+        email = request.session['username']
+        if CoordinatorProfile.objects.filter(email=email).exists():
+            return render(request, 'coordinator_dashboard.html', context)
+        else:
+            return render(request, 'student_dashboard.html', context)
     
     elif section == 'discussion':
         msgs = DiscussionMessage.objects.all().order_by('-timestamp')
